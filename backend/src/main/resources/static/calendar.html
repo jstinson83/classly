@@ -42,6 +42,10 @@
     #result.error { color: #c92a2a; }
     #camera { position: fixed; left: 1rem; bottom: 1rem; width: 3.5rem; height: 3.5rem; padding: 0;
               border-radius: 50%; font-size: 1.6rem; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+    #cycle { position: fixed; left: 5.5rem; bottom: 1rem; width: 3.5rem; height: 3.5rem; padding: 0;
+             border-radius: 50%; font-size: 1.6rem; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+    #review .menu { display: flex; flex-direction: column; gap: .5rem; align-items: stretch; }
+    #review select { font: inherit; padding: .3rem; border: 1px solid #c3cadb; border-radius: .4rem; }
     #review { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: flex-end;
               justify-content: center; z-index: 10; }
     #review[hidden] { display: none; }
@@ -83,6 +87,9 @@
   </main>
   <button id="camera" aria-label="Import schedule or agenda from a photo" title="Import from photo">📷</button>
   <input type="file" id="photo" accept="image/*" hidden>
+  <button id="cycle" aria-label="Rotating day schedule" title="Rotating day schedule">🔁</button>
+  <input type="file" id="cycle-calendar-photo" accept="image/*" hidden>
+  <input type="file" id="cycle-schedule-photo" accept="image/*" hidden>
   <div id="review" hidden>
     <div class="sheet">
       <h2 id="review-title">Importing…</h2>
@@ -95,5 +102,6 @@
     </div>
   </div>
   <script src="/app.js"></script>
+  <script src="/cycle.js"></script>
 </body>
 </html>

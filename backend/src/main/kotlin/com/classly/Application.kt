@@ -104,6 +104,7 @@ fun Application.module(
                 call.respond(HttpStatusCode.BadGateway, ErrorResponse(e.message ?: "Photo import failed"))
             }
         }
+        cycleRoutes(gemini)
         staticResources("/", "static", index = "index.html")
     }
 }
