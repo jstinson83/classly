@@ -5,7 +5,7 @@ const pad = n => String(n).padStart(2, '0');
 const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const todayIso = () => iso(new Date());
 
-// Events are { id, date: 'YYYY-MM-DD', time: 'HH:MM' | '', title, kind?: 'class' }.
+// Events are { id, date: 'YYYY-MM-DD', time: 'HH:MM' | '', title, kind?: 'class', done?: boolean }.
 // Items from a weekly timetable get kind 'class'; everything else is a to-do.
 // Stored in the browser for now; server-side storage is still undecided.
 function loadEvents() {

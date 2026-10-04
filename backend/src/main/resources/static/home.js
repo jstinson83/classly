@@ -12,7 +12,7 @@ document.getElementById('today-label').textContent =
 const todays = events.filter(e => e.date === today)
   .sort((a, b) => (a.time || '24:00').localeCompare(b.time || '24:00'));
 
-function fill(id, items, emptyText) {
+function fill(id, items, emptyText, checkable = false) {
   const ul = document.getElementById(id);
   if (!items.length) {
     ul.innerHTML = '';
@@ -25,10 +25,22 @@ function fill(id, items, emptyText) {
   ul.replaceChildren(...items.map(e => {
     const li = document.createElement('li');
     const time = Object.assign(document.createElement('span'), { className: 'time', textContent: e.time });
-    li.append(time, Object.assign(document.createElement('span'), { textContent: e.title }));
+    const title = Object.assign(document.createElement('span'), { textContent: e.title });
+    if (checkable) {
+      const box = Object.assign(document.createElement('input'), { type: 'checkbox', checked: !!e.done });
+      box.setAttribute('aria-label', 'Done: ' + e.title);
+      li.classList.toggle('done', !!e.done);
+      box.addEventListener('change', () => {
+        e.done = box.checked;
+        li.classList.toggle('done', e.done);
+        localStorage.setItem('classly.events', JSON.stringify(events));
+      });
+      li.append(box);
+    }
+    li.append(time, title);
     return li;
   }));
 }
 
 fill('classes', todays.filter(e => e.kind === 'class'), 'No classes today.');
-fill('todos', todays.filter(e => e.kind !== 'class'), 'Nothing to do today.');
+fill('todos', todays.filter(e => e.kind !== 'class'), 'Nothing to do today.', true);
