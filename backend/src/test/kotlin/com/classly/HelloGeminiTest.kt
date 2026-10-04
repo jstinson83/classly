@@ -30,12 +30,14 @@ class HelloGeminiTest {
     }
 
     @Test
-    fun homePageServesHelloButton() = testApplication {
+    fun homePageServesCalendar() = testApplication {
         application { module(gemini = object : GeminiClient {
             override suspend fun generate(prompt: String) = ""
         }) }
         val response = client.get("/")
         assertEquals(HttpStatusCode.OK, response.status)
-        assertTrue(response.bodyAsText().contains("Hello Gemini"))
+        val body = response.bodyAsText()
+        assertTrue(body.contains("id=\"grid\""))
+        assertTrue(body.contains("Hello Gemini"))
     }
 }
