@@ -37,6 +37,10 @@ interface GeminiClient {
     /** Sends [prompt] to Gemini and returns the model's text reply. */
     suspend fun generate(prompt: String): String
 
+    /** Sends [prompt] and returns the model's reply, requested as JSON. */
+    suspend fun generateJson(prompt: String): String =
+        throw UnsupportedOperationException("JSON generation not supported")
+
     /** Sends [prompt] plus an image (base64 [imageBase64]) and returns the model's reply, requested as JSON. */
     suspend fun generateJsonFromImage(prompt: String, mimeType: String, imageBase64: String): String =
         throw UnsupportedOperationException("Image input not supported")
@@ -45,6 +49,14 @@ interface GeminiClient {
 class RestGeminiClient(private val httpClient: HttpClient, private val apiKey: String) : GeminiClient {
     override suspend fun generate(prompt: String): String =
         call(GeminiRequest(listOf(GeminiContent(listOf(GeminiPart(text = prompt))))))
+
+    override suspend fun generateJson(prompt: String): String =
+        call(
+            GeminiRequest(
+                listOf(GeminiContent(listOf(GeminiPart(text = prompt)))),
+                GeminiGenerationConfig("application/json"),
+            )
+        )
 
     override suspend fun generateJsonFromImage(prompt: String, mimeType: String, imageBase64: String): String =
         call(

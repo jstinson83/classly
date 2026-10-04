@@ -105,6 +105,7 @@ fun Application.module(
             }
         }
         cycleRoutes(gemini)
+        chatRoutes(gemini)
         staticResources("/", "static", index = "index.html")
     }
 }
