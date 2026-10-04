@@ -26,6 +26,7 @@ const grid = document.getElementById('grid');
 const monthLabel = document.getElementById('month-label');
 const dayHeading = document.getElementById('day-heading');
 const dayList = document.getElementById('day-events');
+const dayView = document.getElementById('day-view');
 
 function eventsOn(date) {
   const key = e => e.kind === 'info' ? '' : (e.time || '24:00');
@@ -63,6 +64,7 @@ function renderGrid() {
     }
     cell.addEventListener('click', () => {
       selected = date;
+      dayView.hidden = false;
       if (d.getMonth() !== viewMonth) { viewYear = d.getFullYear(); viewMonth = d.getMonth(); }
       render();
     });
@@ -84,7 +86,8 @@ function renderDay() {
   }
   dayList.replaceChildren(...evs.map(e => {
     const li = document.createElement('li');
-    const time = Object.assign(document.createElement('span'), { className: 'time', textContent: e.time || 'All day' });
+    if (e.kind === 'info') li.className = 'info';
+    const time = Object.assign(document.createElement('span'), { className: 'time', textContent: e.time || (e.kind === 'info' ? '' : 'All day') });
     const title = Object.assign(document.createElement('span'), { className: 'title', textContent: e.title });
     const del = Object.assign(document.createElement('button'), { className: 'secondary', textContent: 'Delete' });
     del.addEventListener('click', () => {
@@ -98,6 +101,20 @@ function renderDay() {
 }
 
 function render() { renderGrid(); renderDay(); }
+
+// Big single-day view: opened by clicking a day in the grid.
+function shiftDay(delta) {
+  const [y, m, d] = selected.split('-').map(Number);
+  const next = new Date(y, m - 1, d + delta);
+  selected = iso(next);
+  viewYear = next.getFullYear();
+  viewMonth = next.getMonth();
+  render();
+}
+document.getElementById('day-prev').addEventListener('click', () => shiftDay(-1));
+document.getElementById('day-next').addEventListener('click', () => shiftDay(1));
+document.getElementById('day-close').addEventListener('click', () => { dayView.hidden = true; });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') dayView.hidden = true; });
 
 function shiftMonth(delta) {
   const d = new Date(viewYear, viewMonth + delta, 1);
