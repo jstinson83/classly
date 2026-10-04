@@ -47,6 +47,7 @@ tests, projects, study/homework blocks, reminders, notes), per-user storage.
 - GCP project ID `foodie-503510` (shared with foodie), region
   `northamerica-northeast1`, Artifact Registry repo `cloud-run-source-deploy`.
 - Cloud Run service `classly`; image `classly-backend:${SHORT_SHA}`.
+  Live URL: https://classly-124314901354.northamerica-northeast1.run.app
 - `GEMINI_API_KEY` is set on the Cloud Run service (Variables & Secrets),
   not in the repo. Locally: `GEMINI_API_KEY=... ./gradlew run` from `backend/`.
 - Only endpoint so far: `POST /api/hello-gemini` (no input).
