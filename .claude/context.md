@@ -44,6 +44,9 @@ conversation, today's date and upcoming non-class calendar items to Gemini
 (`generateJson`), which replies `{reply, events}`; the events (study/homework
 blocks) are written straight to the calendar (`source: 'chat'`, with an Undo
 per reply). The conversation is kept in `localStorage` (`classly.chat`).
+The home page's "Notes" button opens `/notes.html`: free-form notes (title, date,
+body) with search, autosaved to `localStorage` (`classly.notes`). Per-assignment
+notes are not built yet.
 
 ## Architecture at a glance
 
