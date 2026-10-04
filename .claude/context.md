@@ -19,7 +19,7 @@ automatically.
 Solo project, same maintainer as `foodie` (sibling repo whose workflow
 conventions this repo mirrors — see `CLAUDE.md`).
 
-**Status: early.** The home page (`/`) is a month-grid calendar where you
+**Status: early.** The home page (`/`) is a placeholder blue "Hello" page with a "Calendar page" button (top right) linking to `/calendar.html`, a month-grid calendar where you
 can add/delete events (title + optional time) on a selected day. Events live
 in the browser's `localStorage` (key `classly.events`) — no backend storage
 yet. A camera button (bottom-left) takes a photo/upload of a schedule or
