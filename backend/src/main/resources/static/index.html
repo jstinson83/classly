@@ -40,6 +40,18 @@
     .empty { color: #5b6478; }
     footer { margin-top: 1.5rem; text-align: center; font-size: .9rem; color: #5b6478; }
     #result.error { color: #c92a2a; }
+    #camera { position: fixed; left: 1rem; bottom: 1rem; width: 3.5rem; height: 3.5rem; padding: 0;
+              border-radius: 50%; font-size: 1.6rem; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+    #review { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: flex-end;
+              justify-content: center; z-index: 10; }
+    #review[hidden] { display: none; }
+    #review .sheet { background: #fff; width: 100%; max-width: 40rem; max-height: 85vh; overflow: auto;
+                     border-radius: .8rem .8rem 0 0; padding: 1rem; }
+    #review .row { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; padding: .4rem 0; border-top: 1px solid #eef1f8; }
+    #review .row input[type=text] { flex: 1 1 10rem; }
+    #review .actions { display: flex; gap: .5rem; margin-top: .75rem; }
+    #review .weekly { font-size: .75rem; color: #5b6478; }
+    #import-status.error { color: #c92a2a; }
     @media (max-width: 480px) { .day { min-height: 4rem; } .chip { font-size: .65rem; } }
   </style>
 </head>
@@ -69,6 +81,19 @@
       <p id="result"></p>
     </footer>
   </main>
+  <button id="camera" aria-label="Import schedule or agenda from a photo" title="Import from photo">📷</button>
+  <input type="file" id="photo" accept="image/*" hidden>
+  <div id="review" hidden>
+    <div class="sheet">
+      <h2 id="review-title">Importing…</h2>
+      <p id="import-status"></p>
+      <div id="review-rows"></div>
+      <div class="actions">
+        <button id="review-add" hidden>Add selected to calendar</button>
+        <button class="secondary" id="review-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
   <script src="/app.js"></script>
 </body>
 </html>

@@ -126,6 +126,113 @@ document.getElementById('add-form').addEventListener('submit', ev => {
 
 render();
 
+// ---- Photo import: schedule/agenda photo -> review -> calendar ----
+const WEEKS_FOR_WEEKLY_ITEMS = 16;
+const cameraBtn = document.getElementById('camera');
+const photoInput = document.getElementById('photo');
+const review = document.getElementById('review');
+const reviewTitle = document.getElementById('review-title');
+const reviewRows = document.getElementById('review-rows');
+const reviewAdd = document.getElementById('review-add');
+const importStatus = document.getElementById('import-status');
+
+cameraBtn.addEventListener('click', () => photoInput.click());
+document.getElementById('review-cancel').addEventListener('click', () => { review.hidden = true; });
+
+// Downscale to keep the upload small; returns { base64, mimeType }.
+async function photoToBase64(file) {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, 1800 / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  return { base64: dataUrl.split(',')[1], mimeType: 'image/jpeg' };
+}
+
+photoInput.addEventListener('change', async () => {
+  const file = photoInput.files[0];
+  photoInput.value = '';
+  if (!file) return;
+  review.hidden = false;
+  reviewTitle.textContent = 'Reading your photo…';
+  importStatus.className = '';
+  importStatus.textContent = 'This can take a few seconds.';
+  reviewRows.replaceChildren();
+  reviewAdd.hidden = true;
+  try {
+    const { base64, mimeType } = await photoToBase64(file);
+    const res = await fetch('/api/import-photo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: base64, mimeType, today: todayIso() }),
+    });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error || 'Import failed');
+    showReview(body.events);
+  } catch (e) {
+    reviewTitle.textContent = 'Import failed';
+    importStatus.className = 'error';
+    importStatus.textContent = e.message;
+  }
+});
+
+function showReview(items) {
+  if (!items.length) {
+    reviewTitle.textContent = 'Nothing found';
+    importStatus.textContent = 'Try a clearer, well-lit photo of the whole page.';
+    return;
+  }
+  reviewTitle.textContent = `Found ${items.length} item${items.length === 1 ? '' : 's'} — check and edit`;
+  importStatus.textContent = 'Weekly classes are added for the next ' + WEEKS_FOR_WEEKLY_ITEMS + ' weeks.';
+  const rows = items.map(item => {
+    const row = document.createElement('div');
+    row.className = 'row';
+    const check = Object.assign(document.createElement('input'), { type: 'checkbox', checked: true });
+    const title = Object.assign(document.createElement('input'), { type: 'text', value: item.title });
+    row.append(check, title);
+    let dateInput = null, weekdaySelect = null;
+    if (item.date) {
+      dateInput = Object.assign(document.createElement('input'), { type: 'date', value: item.date });
+      row.append(dateInput);
+    } else {
+      weekdaySelect = document.createElement('select');
+      DOW.forEach((d, i) => weekdaySelect.append(new Option('Every ' + d, i, false, i === item.weekday)));
+      row.append(weekdaySelect);
+    }
+    const time = Object.assign(document.createElement('input'), { type: 'time', value: item.time || '' });
+    row.append(time);
+    row.get = () => check.checked && title.value.trim() ? {
+      title: title.value.trim(), time: time.value,
+      date: dateInput ? dateInput.value : null,
+      weekday: weekdaySelect ? Number(weekdaySelect.value) : null,
+    } : null;
+    return row;
+  });
+  reviewRows.replaceChildren(...rows);
+  reviewAdd.hidden = false;
+  reviewAdd.onclick = () => {
+    const added = [];
+    rows.map(r => r.get()).filter(Boolean).forEach(it => {
+      if (it.date) {
+        added.push({ date: it.date, time: it.time, title: it.title });
+      } else {
+        const d = new Date();
+        d.setDate(d.getDate() + ((it.weekday - d.getDay() + 7) % 7));
+        for (let w = 0; w < WEEKS_FOR_WEEKLY_ITEMS; w++) {
+          added.push({ date: iso(d), time: it.time, title: it.title });
+          d.setDate(d.getDate() + 7);
+        }
+      }
+    });
+    added.forEach(e => events.push({ id: crypto.randomUUID(), ...e }));
+    saveEvents(events);
+    review.hidden = true;
+    render();
+  };
+}
+
 // Gemini smoke test (deploy check).
 const button = document.getElementById('hello');
 const result = document.getElementById('result');
