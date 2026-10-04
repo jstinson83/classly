@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notes - Classly</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 1rem; background: #f5f7fb; color: #1d2433; }
+    main { max-width: 40rem; margin: 0 auto; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; }
+    h1 { margin: 0; font-size: 1.6rem; }
+    .links { display: flex; gap: .4rem; }
+    a.nav, button.secondary { padding: .45rem .9rem; border-radius: .5rem; background: #e3e8f4; color: #1d2433;
+                              text-decoration: none; border: 0; font: inherit; cursor: pointer; }
+    button { font: inherit; padding: .45rem .9rem; border: 0; border-radius: .5rem; background: #3b5bdb; color: #fff; cursor: pointer; }
+    button.danger { background: #fff; color: #c92a2a; border: 1px solid #c92a2a; }
+    [hidden] { display: none !important; }
+    #search { width: 100%; font: inherit; padding: .5rem; border: 1px solid #c3cadb; border-radius: .6rem; margin-bottom: .75rem; }
+    #list { display: flex; flex-direction: column; gap: .5rem; }
+    .card { background: #fff; border-radius: .6rem; padding: .75rem 1rem; cursor: pointer; }
+    .card h2 { margin: 0 0 .15rem; font-size: 1.05rem; }
+    .card .meta { font-size: .8rem; color: #5b6478; }
+    .card p { margin: .3rem 0 0; color: #5b6478; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .empty { color: #5b6478; text-align: center; margin-top: 3rem; }
+    #editor { display: flex; flex-direction: column; gap: .6rem; }
+    #editor input, #editor textarea { font: inherit; padding: .6rem; border: 1px solid #c3cadb; border-radius: .6rem; background: #fff; }
+    #title { font-size: 1.3rem; font-weight: 600; }
+    #body { min-height: 55vh; resize: vertical; line-height: 1.5; }
+    .row { display: flex; gap: .5rem; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    #saved { color: #5b6478; font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <section id="list-view">
+      <header>
+        <h1>Notes</h1>
+        <div class="links">
+          <button id="new">New note</button>
+          <a class="nav" href="/">Home</a>
+        </div>
+      </header>
+      <input id="search" type="search" placeholder="Search notes" aria-label="Search notes">
+      <div id="list"></div>
+    </section>
+    <section id="editor-view" hidden>
+      <header>
+        <button class="secondary" id="back">‹ All notes</button>
+        <span id="saved"></span>
+      </header>
+      <div id="editor">
+        <input id="title" placeholder="Title" maxlength="120" aria-label="Title">
+        <input id="date" type="date" aria-label="Date this note is about">
+        <textarea id="body" placeholder="Write your notes here…" aria-label="Note"></textarea>
+        <div class="row"><button class="danger" id="delete">Delete note</button></div>
+      </div>
+    </section>
+  </main>
+  <script src="/notes.js"></script>
+</body>
+</html>
