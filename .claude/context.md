@@ -35,6 +35,10 @@ cycle day per date, plus PD days/holidays) and a day schedule
 expands them into calendar events with `source: 'cycle'` (classes, plus
 `kind: 'info'` labels like "Day 3"/"PD Day" that the home page shows next to
 the date). Re-importing regenerates all `source: 'cycle'` events.
+The home page's "Schedule page" button opens `/schedule.html`: a "Take photo of
+schedule" button (camera or photo library) that imports the day schedule and
+then shows it as a Day 1…N digital schedule. `cyclelib.js` (`CycleStore`) holds
+the shared storage/event-generation used by both pages.
 
 ## Architecture at a glance
 

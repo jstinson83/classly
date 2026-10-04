@@ -11,6 +11,7 @@
     header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; }
     h1 { margin: 0; font-size: 1.6rem; }
     a.nav { padding: .45rem .9rem; border-radius: .5rem; background: #e3e8f4; color: #1d2433; text-decoration: none; }
+    .links { display: flex; gap: .4rem; flex-wrap: wrap; justify-content: flex-end; }
     #today-label { color: #5b6478; margin: 0 0 1rem; }
     section { background: #fff; border-radius: .6rem; padding: 1rem; margin-top: 1rem; }
     h2 { margin: 0 0 .6rem; font-size: 1.1rem; }
@@ -26,7 +27,10 @@
   <main>
     <header>
       <h1>Classly</h1>
-      <a class="nav" href="/calendar.html">Calendar page</a>
+      <div class="links">
+        <a class="nav" href="/schedule.html">Schedule page</a>
+        <a class="nav" href="/calendar.html">Calendar page</a>
+      </div>
     </header>
     <p id="today-label"></p>
     <section>

@@ -1,31 +1,12 @@
 // Rotating day cycle (e.g. a 6-day schedule): a year-calendar photo says which cycle day each date is
 // (and which are no-school days), a schedule photo says which classes run on each cycle day.
-// Both are kept in localStorage and combined into calendar events (source 'cycle') by rebuild().
+// Both are kept in localStorage and combined into calendar events (source 'cycle') by CycleStore.save().
 (() => {
-  const DAYS_KEY = 'classly.cycleDays';       // { 'YYYY-MM-DD': { day: number | null, note: string } }
-  const CLASSES_KEY = 'classly.cycleClasses'; // [{ day, title, time, period }]
-  const load = (key, fallback) => {
-    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
-  };
-  let cycleDays = load(DAYS_KEY, {});
-  let cycleClasses = load(CLASSES_KEY, []);
+  let { days: cycleDays, classes: cycleClasses } = CycleStore.load();
 
   function rebuild() {
-    localStorage.setItem(DAYS_KEY, JSON.stringify(cycleDays));
-    localStorage.setItem(CLASSES_KEY, JSON.stringify(cycleClasses));
-    const fresh = [];
-    for (const [date, info] of Object.entries(cycleDays).sort(([a], [b]) => a.localeCompare(b))) {
-      if (info.day == null) {
-        fresh.push({ date, time: '', title: info.note || 'No school', kind: 'info' });
-        continue;
-      }
-      fresh.push({ date, time: '', title: `Day ${info.day}`, kind: 'info' });
-      cycleClasses.filter(c => c.day === info.day)
-        .forEach(c => fresh.push({ date, time: c.time || '', title: c.title, kind: 'class' }));
-    }
-    events = events.filter(e => e.source !== 'cycle')
-      .concat(fresh.map(e => ({ id: crypto.randomUUID(), source: 'cycle', ...e })));
-    saveEvents(events);
+    CycleStore.save(cycleDays, cycleClasses);
+    events = loadEvents();
     render();
   }
 
@@ -153,9 +134,7 @@
     reviewAdd.textContent = 'Save classes';
     reviewAdd.onclick = () => {
       const added = rows.map(r => r.get()).filter(Boolean);
-      const replaced = new Set(body.classes.map(c => c.day));
-      cycleClasses = cycleClasses.filter(c => !replaced.has(c.day)).concat(added)
-        .sort((a, b) => a.day - b.day || a.period - b.period);
+      cycleClasses = CycleStore.mergeClasses(cycleClasses, added, body.classes.map(c => c.day));
       rebuild();
       showMenu();
     };

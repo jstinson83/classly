@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Schedule - Classly</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 1rem; background: #f5f7fb; color: #1d2433; }
+    main { max-width: 56rem; margin: 0 auto; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; }
+    h1 { margin: 0; font-size: 1.6rem; }
+    a.nav { padding: .45rem .9rem; border-radius: .5rem; background: #e3e8f4; color: #1d2433; text-decoration: none; }
+    button { font: inherit; padding: .45rem .9rem; border: 0; border-radius: .5rem; background: #3b5bdb; color: #fff; cursor: pointer; }
+    button.secondary { background: #e3e8f4; color: #1d2433; }
+    #take { display: flex; flex-direction: column; align-items: center; gap: .5rem; padding: 1.5rem 2rem;
+            font-size: 1.1rem; border-radius: 1rem; margin: 0 auto; }
+    #take .icon { font-size: 2.5rem; }
+    #start { display: flex; min-height: 60vh; align-items: center; justify-content: center; }
+    #start[hidden], #schedule[hidden] { display: none; }
+    #status { text-align: center; color: #5b6478; }
+    #status.error { color: #c92a2a; }
+    #days { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: .6rem; }
+    .day { background: #fff; border-radius: .6rem; padding: .75rem; }
+    .day h2 { margin: 0 0 .4rem; font-size: 1rem; color: #3b5bdb; }
+    .day ul { list-style: none; margin: 0; padding: 0; }
+    .day li { padding: .35rem 0; border-top: 1px solid #eef1f8; }
+    .day .time { display: block; font-size: .75rem; color: #5b6478; }
+    #again { margin-top: 1rem; }
+    #review { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: flex-end;
+              justify-content: center; z-index: 10; }
+    #review[hidden] { display: none; }
+    #review .sheet { background: #fff; width: 100%; max-width: 40rem; max-height: 85vh; overflow: auto;
+                     border-radius: .8rem .8rem 0 0; padding: 1rem; }
+    #review h2 { margin: 0 0 .6rem; font-size: 1.1rem; }
+    #review .row { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; padding: .4rem 0; border-top: 1px solid #eef1f8; }
+    #review .row input[type=text] { flex: 1 1 10rem; }
+    #review input, #review select { font: inherit; padding: .3rem; border: 1px solid #c3cadb; border-radius: .4rem; }
+    #review .actions { display: flex; gap: .5rem; margin-top: .75rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Schedule</h1>
+      <a class="nav" href="/">Home</a>
+    </header>
+    <div id="start" hidden>
+      <button id="take"><span class="icon">📷</span>Take photo of schedule</button>
+    </div>
+    <p id="status"></p>
+    <div id="schedule" hidden>
+      <div id="days"></div>
+      <button class="secondary" id="again">Take a new photo</button>
+    </div>
+  </main>
+  <input type="file" id="photo" accept="image/*" hidden>
+  <div id="review" hidden>
+    <div class="sheet">
+      <h2 id="review-title"></h2>
+      <div id="review-rows"></div>
+      <div class="actions">
+        <button id="review-save">Save schedule</button>
+        <button class="secondary" id="review-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <script src="/cyclelib.js"></script>
+  <script src="/schedule.js"></script>
+</body>
+</html>
