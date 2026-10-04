@@ -27,12 +27,21 @@
     .chip { display: block; font-size: .72rem; background: #dbe4ff; color: #2b3f9e; border-radius: .25rem;
             padding: 1px 4px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .more { font-size: .7rem; color: #5b6478; }
-    section { background: #fff; border-radius: .6rem; padding: 1rem; margin-top: 1rem; }
     h2 { margin: 0 0 .6rem; font-size: 1.1rem; }
     form { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .75rem; }
     input { font: inherit; padding: .4rem; border: 1px solid #c3cadb; border-radius: .4rem; }
     input[name=title] { flex: 1 1 12rem; }
     ul { list-style: none; margin: 0; padding: 0; }
+    #day-view { position: fixed; inset: 0; z-index: 20; background: #f5f7fb; overflow-y: auto; padding: 1rem; }
+    #day-view[hidden] { display: none; }
+    #day-view .inner { max-width: 40rem; margin: 0 auto; }
+    #day-view .bar { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: 1rem; }
+    #day-view h2 { margin: 0; font-size: 1.5rem; flex: 1; text-align: center; }
+    #day-view li { font-size: 1.25rem; padding: .9rem .2rem; }
+    #day-view li .time { min-width: 5.5rem; font-weight: 600; }
+    #day-view li.info .title { color: #3b5bdb; font-weight: 600; }
+    #day-view li button { font-size: 1rem; }
+    #day-view input { font-size: 1.05rem; }
     li { display: flex; align-items: center; gap: .6rem; padding: .4rem 0; border-top: 1px solid #eef1f8; }
     li .time { color: #5b6478; min-width: 4.5rem; font-variant-numeric: tabular-nums; }
     li .title { flex: 1; }
@@ -71,14 +80,21 @@
       </div>
     </header>
     <div id="grid"></div>
-    <section>
-      <h2 id="day-heading"></h2>
+    <section id="day-view" hidden>
+     <div class="inner">
+      <div class="bar">
+        <button class="secondary" id="day-prev" aria-label="Previous day">‹</button>
+        <h2 id="day-heading"></h2>
+        <button class="secondary" id="day-next" aria-label="Next day">›</button>
+      </div>
       <form id="add-form">
         <input name="title" placeholder="Add an event (e.g. Math test)" required maxlength="120">
         <input name="time" type="time" aria-label="Time (optional)">
         <button type="submit">Add</button>
       </form>
       <ul id="day-events"></ul>
+      <button class="secondary" id="day-close">Close</button>
+     </div>
     </section>
     <footer>
       <button class="secondary" id="hello">Hello Gemini</button>
