@@ -38,6 +38,8 @@ class HelloGeminiTest {
         assertEquals(HttpStatusCode.OK, home.status)
         assertTrue(home.bodyAsText().contains("href=\"/calendar.html\""))
         assertTrue(home.bodyAsText().contains("href=\"/schedule.html\""))
+        assertTrue(home.bodyAsText().contains("href=\"/chat.html\""))
+        assertTrue(client.get("/chat.html").bodyAsText().contains("AI chat"))
         assertTrue(client.get("/schedule.html").bodyAsText().contains("Take photo of schedule"))
         val response = client.get("/calendar.html")
         assertEquals(HttpStatusCode.OK, response.status)

@@ -39,6 +39,11 @@ The home page's "Schedule page" button opens `/schedule.html`: a "Take photo of
 schedule" button (camera or photo library) that imports the day schedule and
 then shows it as a Day 1…N digital schedule. `cyclelib.js` (`CycleStore`) holds
 the shared storage/event-generation used by both pages.
+The home page's "AI chat" button opens `/chat.html`: `POST /api/chat` sends the
+conversation, today's date and upcoming non-class calendar items to Gemini
+(`generateJson`), which replies `{reply, events}`; the events (study/homework
+blocks) are written straight to the calendar (`source: 'chat'`, with an Undo
+per reply). The conversation is kept in `localStorage` (`classly.chat`).
 
 ## Architecture at a glance
 

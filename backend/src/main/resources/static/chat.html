@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI chat - Classly</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; margin: 0; background: #f5f7fb; color: #1d2433; }
+    main { max-width: 40rem; margin: 0 auto; height: 100dvh; display: flex; flex-direction: column; padding: 1rem; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; }
+    h1 { margin: 0; font-size: 1.6rem; }
+    .links { display: flex; gap: .4rem; }
+    a.nav, button.secondary { padding: .45rem .9rem; border-radius: .5rem; background: #e3e8f4; color: #1d2433;
+                              text-decoration: none; border: 0; font: inherit; cursor: pointer; }
+    button { font: inherit; padding: .45rem .9rem; border: 0; border-radius: .5rem; background: #3b5bdb; color: #fff; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: default; }
+    #log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: .5rem; padding-bottom: .5rem; }
+    .msg { max-width: 85%; padding: .55rem .8rem; border-radius: .8rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .msg.user { align-self: flex-end; background: #3b5bdb; color: #fff; border-bottom-right-radius: .2rem; }
+    .msg.assistant { align-self: flex-start; background: #fff; border-bottom-left-radius: .2rem; }
+    .msg.error { align-self: center; background: none; color: #c92a2a; }
+    .added { align-self: flex-start; max-width: 85%; background: #dbe4ff; color: #2b3f9e; border-radius: .6rem;
+             padding: .5rem .8rem; font-size: .9rem; }
+    .added ul { margin: .3rem 0; padding-left: 1.1rem; }
+    .added button { padding: .2rem .6rem; font-size: .85rem; }
+    .hint { color: #5b6478; text-align: center; margin: auto; max-width: 24rem; }
+    form { display: flex; gap: .5rem; padding-top: .5rem; }
+    textarea { flex: 1; font: inherit; padding: .5rem; border: 1px solid #c3cadb; border-radius: .6rem; resize: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>AI chat</h1>
+      <div class="links">
+        <button class="secondary" id="new">New chat</button>
+        <a class="nav" href="/">Home</a>
+      </div>
+    </header>
+    <div id="log"></div>
+    <form id="form">
+      <textarea id="input" rows="2" placeholder="e.g. I have a science test on Friday and an essay due Monday" required></textarea>
+      <button id="send" type="submit">Send</button>
+    </form>
+  </main>
+  <script src="/chat.js"></script>
+</body>
+</html>
