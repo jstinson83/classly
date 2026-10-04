@@ -5,7 +5,8 @@ const pad = n => String(n).padStart(2, '0');
 const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const todayIso = () => iso(new Date());
 
-// Events are { id, date: 'YYYY-MM-DD', time: 'HH:MM' | '', title }.
+// Events are { id, date: 'YYYY-MM-DD', time: 'HH:MM' | '', title, kind?: 'class' }.
+// Items from a weekly timetable get kind 'class'; everything else is a to-do.
 // Stored in the browser for now; server-side storage is still undecided.
 function loadEvents() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
@@ -221,7 +222,7 @@ function showReview(items) {
         const d = new Date();
         d.setDate(d.getDate() + ((it.weekday - d.getDay() + 7) % 7));
         for (let w = 0; w < WEEKS_FOR_WEEKLY_ITEMS; w++) {
-          added.push({ date: iso(d), time: it.time, title: it.title });
+          added.push({ date: iso(d), time: it.time, title: it.title, kind: 'class' });
           d.setDate(d.getDate() + 7);
         }
       }
