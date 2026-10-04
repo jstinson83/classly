@@ -6,15 +6,36 @@
   <title>Classly</title>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: system-ui, sans-serif; margin: 0; min-height: 100vh; background: #3b5bdb; color: #fff;
-           display: flex; align-items: center; justify-content: center; }
-    h1 { margin: 0; font-size: 3rem; }
-    a.nav { position: fixed; top: 1rem; right: 1rem; padding: .45rem .9rem; border-radius: .5rem;
-            background: #e3e8f4; color: #1d2433; text-decoration: none; }
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 1rem; background: #868e96; color: #1d2433; }
+    main { max-width: 40rem; margin: 0 auto; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; }
+    h1 { margin: 0; font-size: 1.6rem; color: #fff; }
+    a.nav { padding: .45rem .9rem; border-radius: .5rem; background: #e3e8f4; color: #1d2433; text-decoration: none; }
+    #today-label { color: #fff; margin: 0 0 1rem; }
+    section { background: #fff; border-radius: .6rem; padding: 1rem; margin-top: 1rem; }
+    h2 { margin: 0 0 .6rem; font-size: 1.1rem; }
+    ul { list-style: none; margin: 0; padding: 0; }
+    li { display: flex; gap: .6rem; padding: .4rem 0; border-top: 1px solid #eef1f8; }
+    li .time { color: #5b6478; min-width: 4.5rem; font-variant-numeric: tabular-nums; }
+    .empty { color: #5b6478; }
   </style>
 </head>
 <body>
-  <a class="nav" href="/calendar.html">Calendar page</a>
-  <h1>Hello</h1>
+  <main>
+    <header>
+      <h1>Classly</h1>
+      <a class="nav" href="/calendar.html">Calendar page</a>
+    </header>
+    <p id="today-label"></p>
+    <section>
+      <h2>Today's classes</h2>
+      <ul id="classes"></ul>
+    </section>
+    <section>
+      <h2>Today's to-do's</h2>
+      <ul id="todos"></ul>
+    </section>
+  </main>
+  <script src="/home.js"></script>
 </body>
 </html>
