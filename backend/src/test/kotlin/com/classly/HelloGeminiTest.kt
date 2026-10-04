@@ -30,11 +30,14 @@ class HelloGeminiTest {
     }
 
     @Test
-    fun homePageServesCalendar() = testApplication {
+    fun homePageLinksToCalendar() = testApplication {
         application { module(gemini = object : GeminiClient {
             override suspend fun generate(prompt: String) = ""
         }) }
-        val response = client.get("/")
+        val home = client.get("/")
+        assertEquals(HttpStatusCode.OK, home.status)
+        assertTrue(home.bodyAsText().contains("href=\"/calendar.html\""))
+        val response = client.get("/calendar.html")
         assertEquals(HttpStatusCode.OK, response.status)
         val body = response.bodyAsText()
         assertTrue(body.contains("id=\"grid\""))
