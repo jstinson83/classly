@@ -1,5 +1,7 @@
 package com.classly
 
+import com.google.cloud.firestore.Firestore
+import com.google.cloud.firestore.FirestoreOptions
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
@@ -34,6 +36,20 @@ private val geminiHttpClient: HttpClient by lazy {
         }
         engine {
             requestTimeout = 120_000
+        }
+    }
+}
+
+private val firestoreClient: Firestore by lazy {
+    val databaseId = System.getenv("FIRESTORE_DATABASE_ID") ?: "classly"
+    FirestoreOptions.newBuilder().setDatabaseId(databaseId).build().service
+}
+
+// Separate from geminiHttpClient: Google's OAuth/userinfo endpoints are fast, so keep CIO's default timeouts.
+private val oauthHttpClient: HttpClient by lazy {
+    HttpClient(CIO) {
+        install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
+            json(Json { ignoreUnknownKeys = true })
         }
     }
 }
@@ -79,12 +95,20 @@ internal fun parseImportedEvents(text: String, json: Json): List<ImportedEvent> 
 
 fun Application.module(
     gemini: GeminiClient = RestGeminiClient(geminiHttpClient, System.getenv("GEMINI_API_KEY") ?: ""),
+    userStore: UserRepository = FirestoreUserStore(firestoreClient),
+    oauthClient: HttpClient = oauthHttpClient,
+    oauthRedirectBaseUrl: String = System.getenv("OAUTH_REDIRECT_BASE_URL") ?: "http://localhost:8080",
+    sessionSecret: String = System.getenv("SESSION_SECRET") ?: "dev-only-insecure-session-secret-change-me",
 ) {
     install(io.ktor.server.plugins.contentnegotiation.ContentNegotiation) {
         json(Json { ignoreUnknownKeys = true })
     }
+    installSessionCookie(sessionSecret)
+    installGoogleOAuth(oauthClient, oauthRedirectBaseUrl)
+    installSignInGate()
 
     routing {
+        authRoutes(oauthClient, userStore)
         post("/api/hello-gemini") {
             try {
                 val reply = gemini.generate("Say hello to a student using the Classly school organizer app, in one short friendly sentence.")

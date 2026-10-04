@@ -86,3 +86,24 @@ Config values (project, region, service name) live in `.claude/context.md`.
   default of 15s is too short for Gemini image+JSON generation.
 - A missing `GEMINI_API_KEY` surfaces as a 502 with that message in the
   button's result line.
+
+## Auth / Firestore gotchas
+
+Config IDs and env var names live in `.claude/context.md`.
+
+- Sign-in needs a Google OAuth client (Web application) whose Authorized
+  redirect URI is exactly `<OAUTH_REDIRECT_BASE_URL>/auth/google/callback`.
+  A missing/mismatched client id or redirect URI shows up as a Google error
+  page (`redirect_uri_mismatch`), not a Classly error. The same OAuth client
+  can't be shared with foodie unless both redirect URIs are listed on it.
+- `SESSION_SECRET` must be set on Cloud Run; the code falls back to an
+  insecure dev default, which would let anyone forge a session cookie.
+- Firestore: API must be enabled **and** the `classly` database created
+  explicitly (Native mode, `northamerica-northeast1`); the Cloud Run
+  *runtime* service account needs `roles/datastore.user` (different from
+  the Cloud Build trigger's account). Until then sign-in lands on
+  `/welcome.html?error=1` and the Cloud Run logs show the Firestore error.
+- Tests never touch Firestore or Google: `testModule()` /
+  `signedInClient()` (`TestSupport.kt`) inject `FakeUserStore` and start a
+  session via a test-only `/test-login` route. New API tests must use
+  `signedInClient()` or they'll get 401.

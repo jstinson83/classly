@@ -14,7 +14,7 @@ class ChatTest {
         override suspend fun generateJson(prompt: String): String { onPrompt(prompt); return reply }
     }
 
-    private suspend fun ApplicationTestBuilder.chat(body: String) = client.post("/api/chat") {
+    private suspend fun ApplicationTestBuilder.chat(body: String) = signedInClient().post("/api/chat") {
         contentType(ContentType.Application.Json)
         setBody(body)
     }
@@ -22,7 +22,7 @@ class ChatTest {
     @Test
     fun returnsReplyAndValidBlocksOnly() = testApplication {
         application {
-            module(gemini = fake("""{"reply":"Added two sessions.","events":[
+            testModule(gemini = fake("""{"reply":"Added two sessions.","events":[
                 {"title":"Study Science (1h)","date":"2026-10-08","time":"16:00"},
                 {"title":"Essay (45m)","date":"2026-10-09","time":"soon"},
                 {"title":"Bad date","date":"Friday"},{"title":"","date":"2026-10-09"}]}"""))
@@ -36,7 +36,7 @@ class ChatTest {
 
     @Test
     fun plainTextReplyIsStillShown() = testApplication {
-        application { module(gemini = fake("When is it due?")) }
+        application { testModule(gemini = fake("When is it due?")) }
         val r = chat("""{"messages":[{"role":"user","text":"I have an essay"}]}""")
         assertEquals(HttpStatusCode.OK, r.status)
         assertTrue(r.bodyAsText().contains("When is it due?"))
@@ -45,7 +45,7 @@ class ChatTest {
     @Test
     fun promptIncludesCalendarAndConversation() = testApplication {
         var prompt = ""
-        application { module(gemini = fake("""{"reply":"ok"}""") { prompt = it }) }
+        application { testModule(gemini = fake("""{"reply":"ok"}""") { prompt = it }) }
         chat("""{"messages":[{"role":"user","text":"Math quiz Tuesday"}],"today":"2026-10-04",
             "calendar":[{"date":"2026-10-06","time":"","title":"PD Day"}]}""")
         assertTrue(prompt.contains("2026-10-06 all day: PD Day") && prompt.contains("Student: Math quiz Tuesday"))
@@ -53,7 +53,7 @@ class ChatTest {
 
     @Test
     fun emptyConversationIsBadRequestAndGeminiFailureIsBadGateway() = testApplication {
-        application { module(gemini = object : GeminiClient {
+        application { testModule(gemini = object : GeminiClient {
             override suspend fun generate(prompt: String) = ""
             override suspend fun generateJson(prompt: String): String = throw Exception("boom")
         }) }

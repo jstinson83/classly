@@ -14,7 +14,7 @@ class CycleImportTest {
         override suspend fun generateJsonFromImage(prompt: String, mimeType: String, imageBase64: String) = reply
     }
 
-    private suspend fun ApplicationTestBuilder.post(path: String) = client.post(path) {
+    private suspend fun ApplicationTestBuilder.post(path: String) = signedInClient().post(path) {
         contentType(ContentType.Application.Json)
         setBody("""{"image":"AAAA","today":"2026-10-04"}""")
     }
@@ -22,7 +22,7 @@ class CycleImportTest {
     @Test
     fun calendarKeepsCycleAndNoSchoolDaysAndDropsBadDates() = testApplication {
         application {
-            module(gemini = fake("""[{"date":"2026-10-05","day":3},
+            testModule(gemini = fake("""[{"date":"2026-10-05","day":3},
                 {"date":"2026-10-12","day":null,"note":"PD Day"},
                 {"date":"Oct 6","day":4},{"date":"2026-10-07","day":0}]"""))
         }
@@ -36,7 +36,7 @@ class CycleImportTest {
     @Test
     fun scheduleKeepsClassesAndDropsInvalidOnes() = testApplication {
         application {
-            module(gemini = fake("""```json
+            testModule(gemini = fake("""```json
                 [{"day":1,"title":"Math","time":"09:00","period":1},{"day":6,"title":"Art","period":2},
                 {"day":2,"title":""},{"day":0,"title":"Ghost"}]
                 ```"""))
@@ -50,7 +50,7 @@ class CycleImportTest {
 
     @Test
     fun badGatewayOnGeminiFailure() = testApplication {
-        application { module(gemini = object : GeminiClient {
+        application { testModule(gemini = object : GeminiClient {
             override suspend fun generate(prompt: String) = ""
             override suspend fun generateJsonFromImage(prompt: String, mimeType: String, imageBase64: String): String = throw Exception("boom")
         }) }

@@ -56,7 +56,15 @@ Same stack as `foodie` (reused deliberately):
   `gemini-3.6-flash`. Expected to also do schedule/agenda photo extraction
   (user reviews/edits the result before saving) and the chat planner (tool
   calling that writes calendar entries).
-- **Storage/auth**: not yet decided (foodie uses Firestore + magic-link).
+- **Auth**: Google sign-in only (no magic link), same approach as foodie: Ktor
+  OAuth (`Auth.kt`) → signed `__session` cookie (`SessionData`). A gate
+  (`installSignInGate`) redirects signed-out page requests to the splash
+  screen `/welcome.html` (a "Sign in with Google" card) and answers `/api/*`
+  with 401; `/auth/*` and static js/css stay public. `GET /api/me`, `POST /logout`.
+- **Storage**: Firestore is connected (`UserRepository` / `FirestoreUserStore`,
+  `users` collection: email, name, googleSub, createdAt), but only accounts
+  live there so far — calendar/cycle/chat data is still in `localStorage`
+  (per browser, not per account) and is the obvious next thing to move.
 - **Deploy**: Cloud Build (`cloudbuild.yaml`) → Artifact Registry → Cloud
   Run, triggered by commits to this repo.
 
@@ -71,7 +79,11 @@ tests, projects, study/homework blocks, reminders, notes), per-user storage.
   Live URL: https://classly-124314901354.northamerica-northeast1.run.app
 - `GEMINI_API_KEY` is set on the Cloud Run service (Variables & Secrets),
   not in the repo. Locally: `GEMINI_API_KEY=... ./gradlew run` from `backend/`.
-- Endpoints: `POST /api/hello-gemini` (no input); `POST /api/import-photo`
+- Firestore database ID `classly` (override with `FIRESTORE_DATABASE_ID`),
+  in the same project/region as above. Auth env vars on the Cloud Run service:
+  `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET`,
+  `OAUTH_REDIRECT_BASE_URL` (the live URL above, no trailing slash).
+- Endpoints (all but `/auth/*` require sign-in): `POST /api/hello-gemini` (no input); `POST /api/import-photo`
   (`{image: base64, mimeType, today}` → `{events: [...]}`).
 
 ## Pages (original product spec)
@@ -99,7 +111,8 @@ Cross-cutting: reminders can be added to items.
 
 - Client platform beyond the web page (PWA install, Android TWA like foodie,
   native).
-- Storage and auth model, and whether accounts are per-student only.
+- Moving calendar/cycle/chat data from `localStorage` into Firestore, and
+  whether accounts are per-student only.
 - How reminders are delivered (push, email, in-app only).
 - Changing school terms (the rotating-day cycle itself is handled, see above).
 
