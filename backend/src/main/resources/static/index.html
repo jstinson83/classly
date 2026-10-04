@@ -10,7 +10,7 @@
     main { max-width: 40rem; margin: 0 auto; }
     header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; }
     h1 { margin: 0; font-size: 1.6rem; }
-    a.nav { padding: .45rem .9rem; border-radius: .5rem; background: #e3e8f4; color: #1d2433; text-decoration: none; }
+    a.nav, button.nav { font: inherit; border: 0; cursor: pointer; padding: .45rem .9rem; border-radius: .5rem; background: #e3e8f4; color: #1d2433; text-decoration: none; }
     .links { display: flex; gap: .4rem; flex-wrap: wrap; justify-content: flex-end; }
     #today-label { color: #5b6478; margin: 0 0 1rem; }
     section { background: #fff; border-radius: .6rem; padding: 1rem; margin-top: 1rem; }
@@ -31,6 +31,7 @@
         <a class="nav" href="/chat.html">AI chat</a>
         <a class="nav" href="/schedule.html">Schedule page</a>
         <a class="nav" href="/calendar.html">Calendar page</a>
+        <form method="post" action="/logout" style="margin:0"><button class="nav" type="submit">Sign out</button></form>
       </div>
     </header>
     <p id="today-label"></p>
