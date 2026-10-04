@@ -27,6 +27,15 @@ agenda, sends it to `POST /api/import-photo` (Gemini vision → JSON items),
 and shows a review/edit sheet before adding to the calendar; weekly classes
 (tagged `kind: 'class'`) are expanded 16 weeks forward. A small "Hello Gemini" button in the footer remains as a deploy check.
 
+**Rotating day cycle (e.g. 6-day schedule):** the 🔁 button on the calendar
+page takes two photos — a year calendar (`POST /api/import-cycle-calendar`:
+cycle day per date, plus PD days/holidays) and a day schedule
+(`POST /api/import-cycle-schedule`: classes per cycle day). Both live in
+`localStorage` (`classly.cycleDays`, `classly.cycleClasses`) and `cycle.js`
+expands them into calendar events with `source: 'cycle'` (classes, plus
+`kind: 'info'` labels like "Day 3"/"PD Day" that the home page shows next to
+the date). Re-importing regenerates all `source: 'cycle'` events.
+
 ## Architecture at a glance
 
 Same stack as `foodie` (reused deliberately):
@@ -83,7 +92,7 @@ Cross-cutting: reminders can be added to items.
   native).
 - Storage and auth model, and whether accounts are per-student only.
 - How reminders are delivered (push, email, in-app only).
-- Handling rotating/A-B-day schedules and changing school terms.
+- Changing school terms (the rotating-day cycle itself is handled, see above).
 
 ## Maintenance
 

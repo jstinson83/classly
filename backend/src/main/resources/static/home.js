@@ -42,5 +42,8 @@ function fill(id, items, emptyText, checkable = false) {
   }));
 }
 
+const info = todays.filter(e => e.kind === 'info').map(e => e.title).join(' · ');
+document.getElementById('today-label').textContent += info ? ' — ' + info : '';
+
 fill('classes', todays.filter(e => e.kind === 'class'), 'No classes today.');
-fill('todos', todays.filter(e => e.kind !== 'class'), 'Nothing to do today.', true);
+fill('todos', todays.filter(e => e.kind !== 'class' && e.kind !== 'info'), 'Nothing to do today.', true);
