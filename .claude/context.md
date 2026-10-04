@@ -22,7 +22,10 @@ conventions this repo mirrors — see `CLAUDE.md`).
 **Status: early.** The home page (`/`) is a month-grid calendar where you
 can add/delete events (title + optional time) on a selected day. Events live
 in the browser's `localStorage` (key `classly.events`) — no backend storage
-yet. A small "Hello Gemini" button in the footer remains as a deploy check.
+yet. A camera button (bottom-left) takes a photo/upload of a schedule or
+agenda, sends it to `POST /api/import-photo` (Gemini vision → JSON items),
+and shows a review/edit sheet before adding to the calendar; weekly classes
+are expanded 16 weeks forward. A small "Hello Gemini" button in the footer remains as a deploy check.
 
 ## Architecture at a glance
 
@@ -47,9 +50,11 @@ tests, projects, study/homework blocks, reminders, notes), per-user storage.
 - GCP project ID `foodie-503510` (shared with foodie), region
   `northamerica-northeast1`, Artifact Registry repo `cloud-run-source-deploy`.
 - Cloud Run service `classly`; image `classly-backend:${SHORT_SHA}`.
+  Live URL: https://classly-124314901354.northamerica-northeast1.run.app
 - `GEMINI_API_KEY` is set on the Cloud Run service (Variables & Secrets),
   not in the repo. Locally: `GEMINI_API_KEY=... ./gradlew run` from `backend/`.
-- Only endpoint so far: `POST /api/hello-gemini` (no input).
+- Endpoints: `POST /api/hello-gemini` (no input); `POST /api/import-photo`
+  (`{image: base64, mimeType, today}` → `{events: [...]}`).
 
 ## Pages (original product spec)
 

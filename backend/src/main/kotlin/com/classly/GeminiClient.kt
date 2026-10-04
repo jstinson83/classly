@@ -10,13 +10,22 @@ import kotlinx.serialization.Serializable
 const val GEMINI_MODEL = "gemini-3.6-flash"
 
 @Serializable
-data class GeminiPart(val text: String? = null)
+data class GeminiInlineData(val mimeType: String, val data: String)
+
+@Serializable
+data class GeminiPart(val text: String? = null, val inlineData: GeminiInlineData? = null)
 
 @Serializable
 data class GeminiContent(val parts: List<GeminiPart> = emptyList())
 
 @Serializable
-data class GeminiRequest(val contents: List<GeminiContent>)
+data class GeminiGenerationConfig(val responseMimeType: String)
+
+@Serializable
+data class GeminiRequest(
+    val contents: List<GeminiContent>,
+    val generationConfig: GeminiGenerationConfig? = null,
+)
 
 @Serializable
 data class GeminiCandidate(val content: GeminiContent? = null)
@@ -27,10 +36,25 @@ data class GeminiResponse(val candidates: List<GeminiCandidate>? = null)
 interface GeminiClient {
     /** Sends [prompt] to Gemini and returns the model's text reply. */
     suspend fun generate(prompt: String): String
+
+    /** Sends [prompt] plus an image (base64 [imageBase64]) and returns the model's reply, requested as JSON. */
+    suspend fun generateJsonFromImage(prompt: String, mimeType: String, imageBase64: String): String =
+        throw UnsupportedOperationException("Image input not supported")
 }
 
 class RestGeminiClient(private val httpClient: HttpClient, private val apiKey: String) : GeminiClient {
-    override suspend fun generate(prompt: String): String {
+    override suspend fun generate(prompt: String): String =
+        call(GeminiRequest(listOf(GeminiContent(listOf(GeminiPart(text = prompt))))))
+
+    override suspend fun generateJsonFromImage(prompt: String, mimeType: String, imageBase64: String): String =
+        call(
+            GeminiRequest(
+                listOf(GeminiContent(listOf(GeminiPart(text = prompt), GeminiPart(inlineData = GeminiInlineData(mimeType, imageBase64))))),
+                GeminiGenerationConfig("application/json"),
+            )
+        )
+
+    private suspend fun call(request: GeminiRequest): String {
         if (apiKey.isBlank()) {
             throw IllegalArgumentException("GEMINI_API_KEY environment variable is not configured.")
         }
@@ -38,7 +62,7 @@ class RestGeminiClient(private val httpClient: HttpClient, private val apiKey: S
         val response: HttpResponse = httpClient.post("https://generativelanguage.googleapis.com/v1beta/models/$GEMINI_MODEL:generateContent") {
             url { parameters.append("key", apiKey) }
             contentType(ContentType.Application.Json)
-            setBody(GeminiRequest(listOf(GeminiContent(listOf(GeminiPart(prompt))))))
+            setBody(request)
         }
 
         if (response.status != HttpStatusCode.OK) {
