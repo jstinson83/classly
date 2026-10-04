@@ -19,8 +19,10 @@ automatically.
 Solo project, same maintainer as `foodie` (sibling repo whose workflow
 conventions this repo mirrors — see `CLAUDE.md`).
 
-**Status: scaffold only.** The home page has a single "Hello Gemini" button
-that proves the Gemini call works end to end; no real features exist yet.
+**Status: early.** The home page (`/`) is a month-grid calendar where you
+can add/delete events (title + optional time) on a selected day. Events live
+in the browser's `localStorage` (key `classly.events`) — no backend storage
+yet. A small "Hello Gemini" button in the footer remains as a deploy check.
 
 ## Architecture at a glance
 
