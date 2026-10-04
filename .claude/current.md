@@ -8,16 +8,14 @@ alone. See `context.md` for the stable project overview instead.
 
 ## Active task
 
-Planning only — nothing built yet. The maintainer has not yet laid out a
-sprint; the first one will start with the open decisions in `context.md`
-(platform/stack, LLM provider).
+- [ ] Create the `classly` Cloud Run service and Cloud Build trigger (see
+  `CLAUDE.md`'s "Deploy pipeline"), set `GEMINI_API_KEY`, and confirm the
+  Hello Gemini button works on the deployed URL
 
 ## Future roadmap
 
 Rough ordering from the original idea; no timeline set.
 
-- [ ] Choose platform/stack and LLM provider (see `context.md` open decisions)
-- [ ] Project scaffold, CI, and deploy pipeline
 - [ ] Calendar data model + Calendar page with "+" to add items
 - [ ] Schedule page (manual entry), then schedule photo → calendar import
 - [ ] Agenda photo → assignments import

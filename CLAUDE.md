@@ -52,7 +52,37 @@ helps plan homework/study time and writes it to the calendar. See
   If a push is rejected as unsigned, `git commit --amend --no-edit --reset-author`
   fixes the tip commit.
 
-## Gotchas
+## CI
 
-None recorded yet — nothing is built. Add operational gotchas here as they
-bite (deploy pipeline, persistence, AI integration quirks, etc.).
+`.github/workflows/test.yml` runs `./gradlew test` (Java 21, matching the
+Dockerfile) in `backend/` on every PR and on pushes to `main`. Cloud Build
+only builds and deploys; it never runs tests.
+
+## Deploy pipeline (Cloud Run + Cloud Build)
+
+Config values (project, region, service name) live in `.claude/context.md`.
+
+- `cloudbuild.yaml` at repo root drives build+push+deploy. The Cloud Build
+  trigger must use this file (build type "Cloud Build configuration file",
+  not "Dockerfile"), or it builds and pushes the image but never deploys.
+- Trigger: GitHub push to `main` on `jstinson83/classly`. The trigger and
+  the Cloud Run service are created by hand in the GCP console (nothing in
+  this repo creates them).
+- The trigger's service account needs `roles/artifactregistry.writer` and
+  `roles/run.developer` + `roles/iam.serviceAccountUser`. Newer projects
+  default to the Compute Engine default service account — check which one
+  the trigger actually uses.
+- The first deploy needs the service to allow unauthenticated invocations
+  (`allUsers` → Cloud Run Invoker) or the page returns 403.
+- Cloud Run reclaims CPU after a response is sent, so background work must
+  run on a scope that outlives the request.
+
+## Gemini integration gotchas
+
+- Model name lives in `GEMINI_MODEL` (`GeminiClient.kt`). Google churns
+  model names; a 404 NOT_FOUND from `/api/hello-gemini` means check
+  https://ai.google.dev/gemini-api/docs/models for the current flash model.
+- Keep the HTTP client timeout at 120s (`Application.kt`); the Ktor CIO
+  default of 15s is too short for Gemini image+JSON generation.
+- A missing `GEMINI_API_KEY` surfaces as a 502 with that message in the
+  button's result line.

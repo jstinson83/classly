@@ -19,22 +19,35 @@ automatically.
 Solo project, same maintainer as `foodie` (sibling repo whose workflow
 conventions this repo mirrors — see `CLAUDE.md`).
 
-**Status: planning only. No code, stack, or infra exists yet.**
+**Status: scaffold only.** The home page has a single "Hello Gemini" button
+that proves the Gemini call works end to end; no real features exist yet.
 
 ## Architecture at a glance
 
-Not decided yet. See "Open decisions" below. Capabilities any stack must
-cover:
+Same stack as `foodie` (reused deliberately):
 
-- Image → structured data (schedule photo → classes/times per weekday;
-  agenda photo → assignments with due dates). Vision-capable LLM is the
-  expected approach, with user review/edit of the extracted result before
-  it is saved.
-- Calendar data model: classes (recurring), assignments, tests, projects,
-  study/homework blocks with start/end times, reminders, notes.
-- Conversational planner: LLM with tool/function calling that creates and
-  edits calendar entries directly.
-- Per-user storage and auth.
+- **Backend**: Kotlin + Ktor (Netty), single service in `backend/`, package
+  `com.classly`. Static front end (`src/main/resources/static/`: plain
+  HTML + JS, no framework or templating yet).
+- **AI**: Gemini REST API via `GeminiClient` (`RestGeminiClient`), model
+  `gemini-3.6-flash`. Expected to also do schedule/agenda photo extraction
+  (user reviews/edits the result before saving) and the chat planner (tool
+  calling that writes calendar entries).
+- **Storage/auth**: not yet decided (foodie uses Firestore + magic-link).
+- **Deploy**: Cloud Build (`cloudbuild.yaml`) → Artifact Registry → Cloud
+  Run, triggered by commits to this repo.
+
+Capabilities still to design: calendar data model (classes, assignments,
+tests, projects, study/homework blocks, reminders, notes), per-user storage.
+
+## Configuration reference
+
+- GCP project ID `foodie-503510` (shared with foodie), region
+  `northamerica-northeast1`, Artifact Registry repo `cloud-run-source-deploy`.
+- Cloud Run service `classly`; image `classly-backend:${SHORT_SHA}`.
+- `GEMINI_API_KEY` is set on the Cloud Run service (Variables & Secrets),
+  not in the repo. Locally: `GEMINI_API_KEY=... ./gradlew run` from `backend/`.
+- Only endpoint so far: `POST /api/hello-gemini` (no input).
 
 ## Pages (original product spec)
 
@@ -59,11 +72,9 @@ Cross-cutting: reminders can be added to items.
 
 ## Open decisions
 
-- Platform (PWA vs native Android/iOS vs cross-platform) and backend stack.
-  Foodie is a Kotlin/Ktor PWA + Android TWA on Cloud Run/Firestore; reuse is
-  possible but not assumed.
-- LLM/vision provider for photo extraction and the chat planner.
-- Auth model and whether accounts are per-student only.
+- Client platform beyond the web page (PWA install, Android TWA like foodie,
+  native).
+- Storage and auth model, and whether accounts are per-student only.
 - How reminders are delivered (push, email, in-app only).
 - Handling rotating/A-B-day schedules and changing school terms.
 

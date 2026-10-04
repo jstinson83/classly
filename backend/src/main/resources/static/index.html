@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Classly</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; min-height: 100vh; display: flex;
+           flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem;
+           padding: 1rem; text-align: center; background: #f5f7fb; color: #1d2433; }
+    h1 { margin: 0; font-size: 2.5rem; }
+    button { font-size: 1.1rem; padding: .75rem 1.5rem; border: 0; border-radius: .6rem;
+             background: #3b5bdb; color: #fff; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: default; }
+    #result { max-width: 32rem; min-height: 1.5rem; }
+    #result.error { color: #c92a2a; }
+  </style>
+</head>
+<body>
+  <h1>Classly</h1>
+  <button id="hello">Hello Gemini</button>
+  <p id="result"></p>
+  <script src="/app.js"></script>
+</body>
+</html>
